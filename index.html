@@ -1,0 +1,607 @@
+<title>Treningsradar</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --page-bg:#F5F4F7;
+    --surface:#FFFFFF;
+    --surface-2:#ECEAF1;
+    --ink-primary:#1A1720;
+    --ink-secondary:#5B5665;
+    --ink-muted:#8D8798;
+    --border:rgba(26,23,32,0.12);
+    --border-strong:rgba(26,23,32,0.22);
+    --accent:#A81753;
+    --accent-ink:#FFFFFF;
+    --accent-soft:#F5DCE6;
+    --accent-soft-text:#7A0F3D;
+    --bar-fill:#2A78D6;
+    --bar-track:#E7E5EC;
+    --gridline:#DEDCE3;
+    --rel-low-bg:#E7EFFB;   --rel-low-text:#2A5C9A;
+    --rel-mid-bg:#D7E6FA;   --rel-mid-text:#1D4E8F;
+    --rel-high-bg:#BFD8F5;  --rel-high-text:#0D3866;
+    --tip-bg:#1A1720;
+    --tip-text:#F5F4F7;
+    color-scheme:light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --page-bg:#141219;
+      --surface:#1D1A24;
+      --surface-2:#262230;
+      --ink-primary:#F3F1F6;
+      --ink-secondary:#B8B2C4;
+      --ink-muted:#847E92;
+      --border:rgba(255,255,255,0.12);
+      --border-strong:rgba(255,255,255,0.24);
+      --accent:#E8598D;
+      --accent-ink:#1A1720;
+      --accent-soft:#3A1E2C;
+      --accent-soft-text:#F3AFC7;
+      --bar-fill:#5C9CEC;
+      --bar-track:#2C2836;
+      --gridline:#332E3D;
+      --rel-low-bg:#1E2B3D;  --rel-low-text:#8FB6E8;
+      --rel-mid-bg:#213A57;  --rel-mid-text:#A9CBF2;
+      --rel-high-bg:#254A73; --rel-high-text:#CFE2FA;
+      --tip-bg:#F3F1F6;
+      --tip-text:#1A1720;
+      color-scheme:dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --page-bg:#141219;
+    --surface:#1D1A24;
+    --surface-2:#262230;
+    --ink-primary:#F3F1F6;
+    --ink-secondary:#B8B2C4;
+    --ink-muted:#847E92;
+    --border:rgba(255,255,255,0.12);
+    --border-strong:rgba(255,255,255,0.24);
+    --accent:#E8598D;
+    --accent-ink:#1A1720;
+    --accent-soft:#3A1E2C;
+    --accent-soft-text:#F3AFC7;
+    --bar-fill:#5C9CEC;
+    --bar-track:#2C2836;
+    --gridline:#332E3D;
+    --rel-low-bg:#1E2B3D;  --rel-low-text:#8FB6E8;
+    --rel-mid-bg:#213A57;  --rel-mid-text:#A9CBF2;
+    --rel-high-bg:#254A73; --rel-high-text:#CFE2FA;
+    --tip-bg:#F3F1F6;
+    --tip-text:#1A1720;
+    color-scheme:dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--page-bg);
+    color:var(--ink-primary);
+    font-family:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:40px 24px 80px;}
+
+  .eyebrow{
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:0.11em;
+    font-size:12px;
+    color:var(--accent);
+  }
+  h1{
+    font-family:'Barlow Semi Condensed',sans-serif;
+    font-weight:700;
+    font-size:clamp(30px,4.4vw,46px);
+    line-height:1.03;
+    margin:8px 0 10px;
+    text-wrap:balance;
+    letter-spacing:-0.01em;
+  }
+  .lede{
+    font-size:16px;
+    line-height:1.55;
+    color:var(--ink-secondary);
+    max-width:62ch;
+    margin:0 0 4px;
+  }
+  .meta-row{
+    display:flex;flex-wrap:wrap;gap:8px 18px;
+    margin-top:16px;font-size:12.5px;color:var(--ink-muted);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .meta-row b{color:var(--ink-secondary);font-weight:500;}
+
+  header{
+    padding-bottom:28px;border-bottom:1px solid var(--border);margin-bottom:28px;
+  }
+
+  /* KPI tiles */
+  .kpis{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:1px;background:var(--border);
+    border:1px solid var(--border);border-radius:10px;overflow:hidden;
+    margin-bottom:28px;
+  }
+  .kpi{background:var(--surface);padding:20px 20px 18px;}
+  .kpi .val{
+    font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;
+    font-size:38px;line-height:1;color:var(--ink-primary);
+    font-variant-numeric:tabular-nums;
+  }
+  .kpi .lbl{font-size:13.5px;color:var(--ink-secondary);margin-top:8px;line-height:1.4;}
+  .kpi .src{font-size:11px;color:var(--ink-muted);margin-top:8px;font-family:'IBM Plex Mono',monospace;}
+
+  /* Recommendation callout */
+  .callout{
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-left:4px solid var(--accent);
+    border-radius:8px;
+    padding:18px 22px;
+    margin-bottom:44px;
+  }
+  .callout .eyebrow{margin-bottom:6px;display:block;}
+  .callout p{margin:0 0 8px;font-size:14.5px;line-height:1.6;color:var(--ink-primary);}
+  .callout p:last-child{margin-bottom:0;}
+  .callout strong{color:var(--accent-soft-text);}
+
+  section{margin-bottom:52px;}
+  .section-head{margin-bottom:18px;}
+  .section-head h2{
+    font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;
+    font-size:22px;margin:0 0 6px;letter-spacing:-0.01em;
+  }
+  .section-head p{margin:0;font-size:13.5px;color:var(--ink-secondary);max-width:68ch;line-height:1.55;}
+
+  /* Bar chart (HTML/CSS) */
+  .barchart{
+    background:var(--surface);border:1px solid var(--border);border-radius:10px;
+    padding:22px 24px 18px;
+  }
+  .bar-row{
+    display:grid;
+    grid-template-columns:180px 1fr 96px;
+    align-items:center;gap:14px;
+    padding:10px 0;
+    border-bottom:1px solid var(--border);
+    cursor:default;
+  }
+  .bar-row:last-child{border-bottom:none;}
+  .bar-name{font-size:13.5px;color:var(--ink-primary);font-weight:500;}
+  .bar-track{
+    position:relative;height:22px;background:var(--bar-track);border-radius:4px;
+    background-image:repeating-linear-gradient(to right, var(--gridline) 0, var(--gridline) 1px, transparent 1px, transparent 16.6667%);
+  }
+  .bar-fill{
+    position:absolute;top:0;left:0;height:100%;
+    background:var(--bar-fill);border-radius:4px;
+    min-width:4px;
+  }
+  .bar-val-wrap{display:flex;align-items:center;gap:8px;justify-content:flex-end;}
+  .bar-val{
+    font-family:'IBM Plex Mono',monospace;font-size:13.5px;font-weight:500;
+    font-variant-numeric:tabular-nums;color:var(--ink-primary);white-space:nowrap;
+  }
+  .axis-ticks{
+    display:grid;grid-template-columns:180px 1fr 96px;gap:14px;margin-top:6px;
+  }
+  .axis-ticks .tick-track{
+    position:relative;height:14px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-muted);
+  }
+  .axis-ticks .tick-track span{position:absolute;transform:translateX(-50%);}
+
+  /* Relevans badge */
+  .badge{
+    display:inline-flex;align-items:center;padding:3px 9px;border-radius:100px;
+    font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:500;
+    letter-spacing:0.03em;text-transform:uppercase;white-space:nowrap;
+  }
+  .badge.rel-high{background:var(--rel-high-bg);color:var(--rel-high-text);}
+  .badge.rel-mid{background:var(--rel-mid-bg);color:var(--rel-mid-text);}
+  .badge.rel-low{background:var(--rel-low-bg);color:var(--rel-low-text);}
+
+  .status-pill{
+    display:inline-flex;align-items:center;padding:2px 9px;border-radius:100px;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.03em;
+    color:var(--ink-secondary);white-space:nowrap;
+  }
+  .status-pill.malt{border:1px solid var(--border-strong);}
+  .status-pill.signal{border:1px dashed var(--border-strong);}
+
+  /* Watch-list cards */
+  .watchgrid{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;
+  }
+  .watch-card{
+    background:var(--surface);border:1px dashed var(--border-strong);border-radius:10px;
+    padding:18px 18px 16px;display:flex;flex-direction:column;gap:10px;
+  }
+  .watch-card .wc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+  .watch-card h3{
+    font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:16.5px;
+    margin:0;letter-spacing:-0.01em;
+  }
+  .watch-card .signal-line{font-size:13px;line-height:1.5;color:var(--ink-secondary);margin:0;}
+  .watch-card .ig-note{
+    font-size:12px;line-height:1.5;color:var(--ink-muted);
+    border-top:1px solid var(--border);padding-top:9px;margin-top:auto;
+  }
+  .watch-card .ig-note b{color:var(--ink-secondary);font-weight:600;}
+  .watch-card a{color:var(--ink-muted);}
+
+  /* Table */
+  .filters{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .chip{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;letter-spacing:0.02em;
+    padding:6px 13px;border-radius:100px;border:1px solid var(--border-strong);
+    background:var(--surface);color:var(--ink-secondary);cursor:pointer;
+    transition:background .12s,color .12s,border-color .12s;
+  }
+  .chip:hover{border-color:var(--accent);}
+  .chip.active{background:var(--ink-primary);color:var(--page-bg);border-color:var(--ink-primary);}
+
+  .table-wrap{
+    overflow-x:auto;border:1px solid var(--border);border-radius:10px;background:var(--surface);
+  }
+  table{width:100%;border-collapse:collapse;min-width:920px;}
+  thead th{
+    text-align:left;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;
+    text-transform:uppercase;letter-spacing:0.05em;font-size:11.5px;color:var(--ink-secondary);
+    background:var(--surface-2);padding:11px 16px;border-bottom:1px solid var(--border);
+    white-space:nowrap;cursor:pointer;user-select:none;
+  }
+  thead th:hover{color:var(--ink-primary);}
+  thead th .arrow{opacity:0.4;margin-left:3px;font-size:10px;}
+  tbody td{
+    padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;
+    vertical-align:top;line-height:1.5;
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface-2);}
+  td.num{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  td.name{font-weight:600;color:var(--ink-primary);white-space:nowrap;}
+  td a{color:var(--ink-muted);font-size:12px;}
+  td .sub{display:block;color:var(--ink-muted);font-size:11.5px;margin-top:2px;}
+
+  footer{
+    border-top:1px solid var(--border);padding-top:24px;
+    font-size:12.5px;color:var(--ink-muted);line-height:1.7;
+  }
+  footer h4{
+    font-family:'Barlow Semi Condensed',sans-serif;font-size:13px;text-transform:uppercase;
+    letter-spacing:0.06em;color:var(--ink-secondary);margin:0 0 8px;
+  }
+  footer ul{margin:0 0 18px;padding-left:18px;}
+  footer a{color:var(--ink-secondary);}
+  footer .disclaimer{
+    background:var(--surface);border:1px solid var(--border);border-radius:8px;
+    padding:14px 16px;margin-bottom:18px;
+  }
+
+  #tooltip{
+    position:fixed;pointer-events:none;z-index:50;
+    background:var(--tip-bg);color:var(--tip-text);
+    font-size:12px;line-height:1.5;padding:9px 12px;border-radius:7px;
+    max-width:260px;opacity:0;transform:translateY(4px);
+    transition:opacity .1s,transform .1s;font-family:'Inter',sans-serif;
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+  }
+  #tooltip.show{opacity:1;transform:translateY(0);}
+  #tooltip b{display:block;margin-bottom:3px;font-weight:600;}
+
+  @media (max-width:640px){
+    .bar-row{grid-template-columns:110px 1fr 72px;}
+    .axis-ticks{grid-template-columns:110px 1fr 72px;}
+    .bar-name{font-size:12px;}
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <span class="eyebrow">Markedskartlegging &middot; treningsklær for dame</span>
+    <h1>Treningsradar</h1>
+    <p class="lede">Hvor mange nordmenn driver faktisk med hva &mdash; og hvor tights-relevant er hver treningsform? Satt sammen for å prioritere innsats og innhold rundt et dametights-merke.</p>
+    <div class="meta-row">
+      <span><b>Sist oppdatert:</b> 10. sep 2026</span>
+      <span><b>Geografi:</b> Norge, 16&#43; år</span>
+      <span><b>Kilder:</b> SSB Levekårsundersøkelsen, Virke/bransjepresse, manuell IG-research</span>
+    </div>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi">
+      <div class="val">80%</div>
+      <div class="lbl">trener eller mosjonerer minst ukentlig</div>
+      <div class="src">SSB &middot; stabilt siden 2013</div>
+    </div>
+    <div class="kpi">
+      <div class="val">56%</div>
+      <div class="lbl">har gjort styrketrening siste år &mdash; ≈2,5 mill personer</div>
+      <div class="src">SSB 2024 &middot; +6 poeng siden 2021</div>
+    </div>
+    <div class="kpi">
+      <div class="val">40%</div>
+      <div class="lbl">har trent på treningssenter siste år</div>
+      <div class="src">SSB 2024 &middot; opp fra 30% i 2021</div>
+    </div>
+    <div class="kpi">
+      <div class="val">+130%</div>
+      <div class="lbl">flere pilates-timer besøkt hos SATS på ett år</div>
+      <div class="src">SATS pressemelding 2026 &middot; fra lite volum</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <span class="eyebrow">Hvor bør hun prioritere</span>
+    <p><strong>Hovedspor:</strong> styrketrening og treningssenter-trening generelt. Størst faktisk publikum, fortsatt i vekst, og svært høy tights-relevans &mdash; kjernen i det norske fitness-Instagram-miljøet (Funkygine, Emmeli Bang m.fl. bygger innhold rundt akkurat dette).</p>
+    <p><strong>Vekstmotor:</strong> Pilates/Reformer. Lite volum foreløpig &mdash; SSB måler det ikke engang separat &mdash; men eksplosiv vekst og den mest "outfit-drevne" treningsformen som finnes: matchende sett er nesten en del av selve aktiviteten.</p>
+    <p><strong>Tidsaktuell krok:</strong> Hyrox Oslo, 25.&ndash;27. sep 2026 (Nova Spektrum, ~8&nbsp;000 utøvere ventet) &mdash; kort vindu for kampanjeinnhold rundt hybrid/funksjonell trening.</p>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <h2>Volum: hva flest faktisk driver med</h2>
+      <p>Andel av befolkningen (16+) som har gjort aktiviteten siste 12 måneder, 2024. Dette er de eneste seks treningsformene SSB måler som egne kategorier med tall du kan stole på. Relevans-merket til høyre er en vurdering av hvor sentralt tights/leggings er i akkurat den aktiviteten.</p>
+    </div>
+    <div class="barchart" id="barchart"></div>
+    <div class="axis-ticks">
+      <div></div>
+      <div class="tick-track" id="ticks"></div>
+      <div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Vekstsignaler: nisjer i rask fremvekst</h2>
+      <p>Disse måles ikke som egne kategorier i offisiell statistikk (de inngår ofte i "gruppetrening" eller er for nye/små til å nå SSBs utvalg), men bransjepress, arrangementstall og synlighet på Instagram peker tydelig oppover. Stiplet kant = anslag/signal, ikke offisiell måling.</p>
+    </div>
+    <div class="watchgrid" id="watchgrid"></div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Full oversikt</h2>
+      <p>Alle elleve treningsformene samlet, med kjønnsfordeling der den finnes og kilde for hver rad. Klikk kolonnetitler for å sortere, eller filtrer under.</p>
+    </div>
+    <div class="filters" id="filters"></div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th data-key="name">Treningsform <span class="arrow">&#8597;</span></th>
+            <th data-key="volume">Volum / andel <span class="arrow">&#8597;</span></th>
+            <th data-key="growth">Vekstsignal</th>
+            <th data-key="gender">Kjønnsfordeling</th>
+            <th data-key="relevance">Tights-relevans <span class="arrow">&#8597;</span></th>
+            <th data-key="status">Status <span class="arrow">&#8597;</span></th>
+            <th data-key="source">Kilde</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <div class="disclaimer">
+      <h4>Om Instagram-signalene</h4>
+      Dette dashboardet henter ikke live-data fra Instagram &mdash; det finnes ingen måte å bygge en artifact som "scanner" plattformen selv (den kjører sandboxet, og automatisert skraping av Instagram bryter både tekniske sperrer og brukervilkårene deres). IG-notatene under er et manuelt research-øyeblikksbilde (hashtag-synlighet, hvilke norske fitness-influencere som poster hva, bransjeomtale). Be om en oppdatering når du vil ha et ferskere blikk.
+    </div>
+    <h4>Kilder</h4>
+    <ul>
+      <li>SSB &mdash; <a href="https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden" target="_blank" rel="noopener">Styrketrening i vinden (2024-tall)</a></li>
+      <li>SSB &mdash; <a href="https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/styrketrening-stadig-mer-populaert" target="_blank" rel="noopener">Styrketrening stadig mer populært (2019-tall, kjønnsfordelt)</a></li>
+      <li>SSB &mdash; <a href="https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning" target="_blank" rel="noopener">Mest mosjon og idrett blant de med høy inntekt og utdanning</a></li>
+      <li>SATS &mdash; <a href="https://www.mynewsdesk.com/no/sats-norge-as/pressreleases/pilates-trenden-fortsetter-sats-aapner-nytt-reformer-studio-3373813" target="_blank" rel="noopener">Pilates-trenden fortsetter: SATS åpner nytt Reformer-studio</a></li>
+      <li>3T &mdash; <a href="https://www.3t.no/inspirasjon/3t-utvider-pilates-reformer-tilbudet" target="_blank" rel="noopener">3T utvider Pilates Reformer-tilbudet</a></li>
+      <li>Aftenposten &mdash; <a href="https://www.aftenposten.no/sprek/i/OoJnr3/hoert-om-hyrox-naa-vokser-trendsporten-i-norge" target="_blank" rel="noopener">Hørt om Hyrox? Nå vokser trendsporten i Norge</a></li>
+      <li>HYROX &mdash; <a href="https://hyrox.com/event/hyrox-oslo/" target="_blank" rel="noopener">HYROX Oslo, 25.&ndash;27. sep 2026</a></li>
+      <li>Rastavanger &mdash; <a href="https://www.rastavanger.no/lurer-pa-om-fenomenet-ogsa-har-truffet-stavanger/s/5-165-9460" target="_blank" rel="noopener">Boksing-fenomenet i Stavanger</a></li>
+    </ul>
+    <p>Bygget som research-grunnlag, ikke som endelig sannhet &mdash; flere av nisjetallene er anslag. Spør om å få gravd dypere i én enkelt treningsform, eller om å legge til flere kilder.</p>
+  </footer>
+
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+const RANK = { high: 3, mid: 2, low: 1 };
+const REL_LABEL = { high: 'Høy', mid: 'Middels', low: 'Lav' };
+
+const barData = [
+  { name:'Styrketrening', pct:56, relevance:'high', tip:'56% av befolkningen 16+ har gjort styrketrening siste år (≈2,5 mill). Opp fra 46% i 2019 og 18% i 2001 — den klart største strukturerte treningsformen i Norge.' },
+  { name:'Trening på senter (generelt)', pct:40, relevance:'high', tip:'40% har trent på treningssenter siste 12 måneder, opp fra 30% i 2021 — den raskeste veksten blant de SSB faktisk måler.' },
+  { name:'Løping / jogging', pct:38, relevance:'high', tip:'38% løper eller jogger. Kjønnsfordelt (2019): menn 43%, kvinner 35%.' },
+  { name:'Sykling', pct:38, relevance:'mid', tip:'38% sykler. Delvis eget utstyrssegment (sykkelbukse med pute/søm) med mindre overlapp mot generiske treningstights.' },
+  { name:'Ski / langrenn', pct:26, relevance:'low', tip:'26% går på ski. Yttertøy og skibukse dominerer garderoben her, ikke treningstights.' },
+  { name:'Gruppetrening', pct:20, relevance:'high', tip:'20% deltar i gruppetimer (spinning, dans, aerobic m.m.). Kvinnedominert: 27% av kvinner mot en lavere andel menn (2019-tall). Pilates og deler av yoga-tilbudet inngår her uten å skilles ut.' },
+];
+
+const watchData = [
+  {
+    name:'Pilates / Reformer',
+    relevance:'high',
+    line:'Ikke egen SSB-kategori — inngår i "gruppetrening" (20%). SATS meldte 130% flere klassebesøk på ett år; 3T har venteliste på nye Reformer-studioer.',
+    ig:'Svært synlig trend: matchende sett og "studio girl"-estetikk er nesten definerende for hvordan Reformer-innhold poseres på Instagram/TikTok.',
+    source:'SATS / 3T / Treningsindustrien',
+    url:'https://www.mynewsdesk.com/no/sats-norge-as/pressreleases/pilates-trenden-fortsetter-sats-aapner-nytt-reformer-studio-3373813'
+  },
+  {
+    name:'Hyrox / hybrid-trening',
+    relevance:'mid',
+    line:'Ikke et befolkningstall — men Hyrox Oslo 25.–27. sep 2026 venter ca. 8 000 utøvere, inkl. eget "Youngstars"-opplegg for unge. Rask internasjonal vekst.',
+    ig:'Høy synlighet rundt konkurransedatoer; sterk "hybrid athlete"-estetikk. Mer shorts/singlet i konkurranse, men tights dominerer treningsopptak.',
+    source:'Aftenposten / HYROX',
+    url:'https://hyrox.com/event/hyrox-oslo/'
+  },
+  {
+    name:'Yoga',
+    relevance:'high',
+    line:'Ingen egen andel funnet i SSB — men SSB peker kvalitativt på at kvinner "i større grad ønsker" yoga og fleksibilitetstrening enn menn.',
+    ig:'Etablert, jevnt tilstedeværende kategori snarere enn eksplosiv — men tights/matchende sett er en fast del av innholdsformatet.',
+    source:'SSB (kjønnsforskjeller-artikkel)',
+    url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning'
+  },
+  {
+    name:'Boksing / kampsport',
+    relevance:'low',
+    line:'Ikke landsdekkende tall — men klubber som Viking BK melder ca. 20% medlemsvekst på ett år, og kampsport har blitt mer sosialt bredt akseptert.',
+    ig:'Voksende, men fortsatt nisje og tradisjonelt mer mannsdominert. Løs/street-inspirert treningstøy slår sportstøy-tights her.',
+    source:'Rastavanger',
+    url:'https://www.rastavanger.no/lurer-pa-om-fenomenet-ogsa-har-truffet-stavanger/s/5-165-9460'
+  },
+  {
+    name:'Turgåing / spaserturer',
+    relevance:'low',
+    line:'Den mest utbredte fysiske aktiviteten totalt i Norge på tvers av alder — men mer et friluftsliv- enn et "treningstights"-segment.',
+    ig:'Stort, stabilt volum av innhold — men garderoben er skalljakke og turbukse, ikke matchende treningssett.',
+    source:'SSB friluftsliv',
+    url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning'
+  },
+];
+
+const tableData = [
+  { name:'Styrketrening', volume:'56% (≈2,5 mill)', volumeSort:56, growth:'+6 poeng siden 2021', gender:'Kvinner 47% · Menn 44%', relevance:'high', status:'malt', source:'SSB 2024 / 2019', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Trening på senter (generelt)', volume:'40%', volumeSort:40, growth:'+10 poeng siden 2021', gender:'Ikke oppgitt separat', relevance:'high', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Løping / jogging', volume:'38%', volumeSort:38, growth:'Stabil / svak økning', gender:'Menn 43% · Kvinner 35%', relevance:'high', status:'malt', source:'SSB 2019', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/styrketrening-stadig-mer-populaert' },
+  { name:'Sykling', volume:'38%', volumeSort:38, growth:'Stabil', gender:'Ikke oppgitt separat', relevance:'mid', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Gruppetrening', volume:'20%', volumeSort:20, growth:'Moderat, kvinnedrevet', gender:'Kvinner 27% · Menn lavere', relevance:'high', status:'malt', source:'SSB 2019 / 2024', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/styrketrening-stadig-mer-populaert' },
+  { name:'Ski / langrenn', volume:'26%', volumeSort:26, growth:'Stabil, sesongavhengig', gender:'Ikke oppgitt separat', relevance:'low', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Pilates / Reformer', volume:'Del av "gruppetrening" — eget tall finnes ikke', volumeSort:5, growth:'+130% klassebesøk (SATS, 1 år)', gender:'Sterkt kvinnedominert (kvalitativt)', relevance:'high', status:'signal', source:'SATS / 3T', url:'https://www.mynewsdesk.com/no/sats-norge-as/pressreleases/pilates-trenden-fortsetter-sats-aapner-nytt-reformer-studio-3373813' },
+  { name:'Yoga', volume:'Eget tall finnes ikke', volumeSort:4, growth:'Ikke tallfestet — kvalitativt "økende interesse"', gender:'Kvinner ønsker det i større grad enn menn', relevance:'high', status:'signal', source:'SSB', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning' },
+  { name:'Hyrox / hybrid-trening', volume:'~8 000 utøvere ventet, Oslo sep 2026', volumeSort:8, growth:'Rask vekst, nylig kommet til Norge', gender:'Ikke oppgitt', relevance:'mid', status:'signal', source:'Aftenposten / HYROX', url:'https://hyrox.com/event/hyrox-oslo/' },
+  { name:'Boksing / kampsport', volume:'Klubbnivå, ikke nasjonalt tall', volumeSort:3, growth:'~20% medlemsvekst (enkeltklubb, 1 år)', gender:'Tradisjonelt mannsdominert, flere kvinner nå', relevance:'low', status:'signal', source:'Rastavanger', url:'https://www.rastavanger.no/lurer-pa-om-fenomenet-ogsa-har-truffet-stavanger/s/5-165-9460' },
+  { name:'Turgåing / spaserturer', volume:'Høyest totalt av alle aktiviteter (ikke presisert %)', volumeSort:70, growth:'Stabil, kvinner noe mer enn menn', gender:'Kvinner noe mer enn menn', relevance:'low', status:'signal', source:'SSB friluftsliv', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning' },
+];
+
+const tooltip = document.getElementById('tooltip');
+function showTip(el, html){
+  tooltip.innerHTML = html;
+  tooltip.classList.add('show');
+  positionTip(el);
+}
+function positionTip(el){
+  const r = el.getBoundingClientRect();
+  const tw = tooltip.offsetWidth || 260;
+  let x = r.left + r.width/2 - tw/2;
+  x = Math.max(12, Math.min(x, window.innerWidth - tw - 12));
+  let y = r.top - tooltip.offsetHeight - 10;
+  if (y < 8) y = r.bottom + 10;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+function hideTip(){ tooltip.classList.remove('show'); }
+
+// Bar chart
+const maxScale = 60;
+const barchartEl = document.getElementById('barchart');
+barData.forEach(d => {
+  const row = document.createElement('div');
+  row.className = 'bar-row';
+  row.innerHTML = `
+    <div class="bar-name">${d.name}</div>
+    <div class="bar-track"><div class="bar-fill" style="width:${(d.pct/maxScale*100).toFixed(1)}%"></div></div>
+    <div class="bar-val-wrap">
+      <span class="bar-val">${d.pct}%</span>
+      <span class="badge rel-${d.relevance}">${REL_LABEL[d.relevance]}</span>
+    </div>`;
+  row.addEventListener('mouseenter', () => showTip(row, `<b>${d.name}</b>${d.tip}`));
+  row.addEventListener('mousemove', () => positionTip(row));
+  row.addEventListener('mouseleave', hideTip);
+  barchartEl.appendChild(row);
+});
+const ticksEl = document.getElementById('ticks');
+[0,10,20,30,40,50,60].forEach(t => {
+  const s = document.createElement('span');
+  s.style.left = (t/maxScale*100) + '%';
+  s.textContent = t + '%';
+  ticksEl.appendChild(s);
+});
+
+// Watch-list
+const watchgridEl = document.getElementById('watchgrid');
+watchData.forEach(d => {
+  const card = document.createElement('div');
+  card.className = 'watch-card';
+  card.innerHTML = `
+    <div class="wc-top">
+      <h3>${d.name}</h3>
+      <span class="badge rel-${d.relevance}">${REL_LABEL[d.relevance]}</span>
+    </div>
+    <p class="signal-line">${d.line}</p>
+    <p class="ig-note"><b>IG-signal:</b> ${d.ig}<br><a href="${d.url}" target="_blank" rel="noopener">Kilde: ${d.source} &rarr;</a></p>`;
+  watchgridEl.appendChild(card);
+});
+
+// Table + filters + sort
+let sortKey = 'volumeSort';
+let sortDir = -1;
+let activeFilter = 'all';
+
+const filters = [
+  { key:'all', label:'Vis alle' },
+  { key:'malt', label:'Kun målt (SSB/Virke)' },
+  { key:'signal', label:'Kun signal (bransje/IG)' },
+  { key:'high', label:'Kun høy tights-relevans' },
+];
+const filtersEl = document.getElementById('filters');
+filters.forEach(f => {
+  const chip = document.createElement('button');
+  chip.className = 'chip' + (f.key === 'all' ? ' active' : '');
+  chip.textContent = f.label;
+  chip.dataset.key = f.key;
+  chip.addEventListener('click', () => {
+    activeFilter = f.key;
+    [...filtersEl.children].forEach(c => c.classList.toggle('active', c === chip));
+    renderTable();
+  });
+  filtersEl.appendChild(chip);
+});
+
+document.querySelectorAll('thead th[data-key]').forEach(th => {
+  th.addEventListener('click', () => {
+    const key = th.dataset.key;
+    if (sortKey === key) sortDir *= -1; else { sortKey = key; sortDir = 1; }
+    renderTable();
+  });
+});
+
+function renderTable(){
+  let rows = tableData.slice();
+  if (activeFilter === 'malt' || activeFilter === 'signal') rows = rows.filter(r => r.status === activeFilter);
+  if (activeFilter === 'high') rows = rows.filter(r => r.relevance === 'high');
+
+  rows.sort((a,b) => {
+    let av, bv;
+    if (sortKey === 'relevance') { av = RANK[a.relevance]; bv = RANK[b.relevance]; }
+    else if (sortKey === 'volume') { av = a.volumeSort; bv = b.volumeSort; }
+    else { av = String(a[sortKey]).toLowerCase(); bv = String(b[sortKey]).toLowerCase(); }
+    if (av < bv) return -1 * sortDir;
+    if (av > bv) return 1 * sortDir;
+    return 0;
+  });
+
+  const tbody = document.getElementById('tbody');
+  tbody.innerHTML = '';
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="name">${r.name}</td>
+      <td class="num">${r.volume}</td>
+      <td>${r.growth}</td>
+      <td>${r.gender}</td>
+      <td><span class="badge rel-${r.relevance}">${REL_LABEL[r.relevance]}</span></td>
+      <td><span class="status-pill ${r.status === 'malt' ? 'malt' : 'signal'}">${r.status === 'malt' ? 'Målt' : 'Signal'}</span></td>
+      <td><a href="${r.url}" target="_blank" rel="noopener">${r.source} &rarr;</a></td>`;
+    tbody.appendChild(tr);
+  });
+}
+renderTable();
+</script>
