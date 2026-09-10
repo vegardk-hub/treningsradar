@@ -338,20 +338,33 @@
 
   <div class="callout">
     <span class="eyebrow">Hvor bør hun prioritere</span>
-    <p><strong>Hovedspor:</strong> styrketrening og treningssenter-trening generelt. Størst faktisk publikum, fortsatt i vekst, og svært høy tights-relevans &mdash; kjernen i det norske fitness-Instagram-miljøet (Funkygine, Emmeli Bang m.fl. bygger innhold rundt akkurat dette).</p>
+    <p><strong>Hovedspor:</strong> styrketrening. Størst faktisk publikum av alle aktivitetstyper (56%), fortsatt i vekst, og svært høy tights-relevans &mdash; kjernen i det norske fitness-Instagram-miljøet (Funkygine, Emmeli Bang m.fl. bygger innhold rundt akkurat dette). Mesteparten skjer på treningssenter, som selv er den raskest voksende <em>konteksten</em> (40%, opp fra 30% i 2021) &mdash; verdt å nevne i innhold, men ikke en egen målgruppe ved siden av styrketrening.</p>
     <p><strong>Vekstmotor:</strong> Pilates/Reformer. Lite volum foreløpig &mdash; SSB måler det ikke engang separat &mdash; men eksplosiv vekst og den mest "outfit-drevne" treningsformen som finnes: matchende sett er nesten en del av selve aktiviteten.</p>
     <p><strong>Tidsaktuell krok:</strong> Hyrox Oslo, 25.&ndash;27. sep 2026 (Nova Spektrum, ~8&nbsp;000 utøvere ventet) &mdash; kort vindu for kampanjeinnhold rundt hybrid/funksjonell trening.</p>
   </div>
 
   <section>
     <div class="section-head">
-      <h2>Volum: hva flest faktisk driver med</h2>
-      <p>Andel av befolkningen (16+) som har gjort aktiviteten siste 12 måneder, 2024. Dette er de eneste seks treningsformene SSB måler som egne kategorier med tall du kan stole på. Relevans-merket til høyre er en vurdering av hvor sentralt tights/leggings er i akkurat den aktiviteten.</p>
+      <h2>Volum: hvilken aktivitet flest faktisk driver med</h2>
+      <p>Andel av befolkningen (16+) som har gjort aktiviteten siste 12 måneder, 2024. Dette er <em>hva</em> folk gjør — fire atskilte aktivitetstyper SSB måler hver for seg. En som løper kan også styrketrene, så tallene summerer seg ikke til 100%, men de overlapper ikke <em>strukturelt</em> slik kategoriene under gjør.</p>
     </div>
     <div class="barchart" id="barchart"></div>
     <div class="axis-ticks">
       <div></div>
       <div class="tick-track" id="ticks"></div>
+      <div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <h2>Kontekst: hvor og i hvilket format</h2>
+      <p><strong>Dette er ikke to nye aktivitetstyper på toppen av tallene over</strong> — det er <em>hvor</em> og <em>hvordan</em> mye av aktiviteten over faktisk foregår. Mesteparten av styrketreningen skjer nettopp på et senter; gruppetrening er et format (spinning, dans, pilates m.m.) som også stort sett leveres på senter. De to diagrammene måler ulike dimensjoner av samme virkelighet, ikke sammenlignbare, gjensidig utelukkende grupper.</p>
+    </div>
+    <div class="barchart" id="contextchart"></div>
+    <div class="axis-ticks">
+      <div></div>
+      <div class="tick-track" id="contextticks"></div>
       <div></div>
     </div>
   </section>
@@ -367,7 +380,7 @@
   <section>
     <div class="section-head">
       <h2>Full oversikt</h2>
-      <p>Alle elleve treningsformene samlet, med kjønnsfordeling der den finnes og kilde for hver rad. Klikk kolonnetitler for å sortere, eller filtrer under.</p>
+      <p>Alle elleve radene samlet. Merk <strong>Dimensjon</strong>-kolonnen: "Aktivitet" er hva folk gjør, "Kontekst/format" er hvor eller hvordan &mdash; de to er ikke sammenlignbare størrelser og bør ikke summeres. Klikk kolonnetitler for å sortere, eller filtrer under.</p>
     </div>
     <div class="filters" id="filters"></div>
     <div class="table-wrap">
@@ -375,6 +388,7 @@
         <thead>
           <tr>
             <th data-key="name">Treningsform <span class="arrow">&#8597;</span></th>
+            <th data-key="dimension">Dimensjon <span class="arrow">&#8597;</span></th>
             <th data-key="volume">Volum / andel <span class="arrow">&#8597;</span></th>
             <th data-key="growth">Vekstsignal</th>
             <th data-key="gender">Kjønnsfordeling</th>
@@ -416,12 +430,15 @@ const RANK = { high: 3, mid: 2, low: 1 };
 const REL_LABEL = { high: 'Høy', mid: 'Middels', low: 'Lav' };
 
 const barData = [
-  { name:'Styrketrening', pct:56, relevance:'high', tip:'56% av befolkningen 16+ har gjort styrketrening siste år (≈2,5 mill). Opp fra 46% i 2019 og 18% i 2001 — den klart største strukturerte treningsformen i Norge.' },
-  { name:'Trening på senter (generelt)', pct:40, relevance:'high', tip:'40% har trent på treningssenter siste 12 måneder, opp fra 30% i 2021 — den raskeste veksten blant de SSB faktisk måler.' },
+  { name:'Styrketrening', pct:56, relevance:'high', tip:'56% av befolkningen 16+ har gjort styrketrening siste år (≈2,5 mill). Opp fra 46% i 2019 og 18% i 2001 — den klart største aktivitetstypen i Norge.' },
   { name:'Løping / jogging', pct:38, relevance:'high', tip:'38% løper eller jogger. Kjønnsfordelt (2019): menn 43%, kvinner 35%.' },
   { name:'Sykling', pct:38, relevance:'mid', tip:'38% sykler. Delvis eget utstyrssegment (sykkelbukse med pute/søm) med mindre overlapp mot generiske treningstights.' },
   { name:'Ski / langrenn', pct:26, relevance:'low', tip:'26% går på ski. Yttertøy og skibukse dominerer garderoben her, ikke treningstights.' },
-  { name:'Gruppetrening', pct:20, relevance:'high', tip:'20% deltar i gruppetimer (spinning, dans, aerobic m.m.). Kvinnedominert: 27% av kvinner mot en lavere andel menn (2019-tall). Pilates og deler av yoga-tilbudet inngår her uten å skilles ut.' },
+];
+
+const contextData = [
+  { name:'Trening på treningssenter', pct:40, relevance:'high', tip:'40% har trent på treningssenter siste 12 måneder, opp fra 30% i 2021 — raskest voksende av alt SSB måler. Dette er stedet mye av styrketreningen over faktisk skjer, ikke en egen aktivitet på toppen av den.' },
+  { name:'Gruppetrening', pct:20, relevance:'high', tip:'20% deltar i gruppetimer (spinning, dans, aerobic m.m.). Kvinnedominert: 27% av kvinner mot en lavere andel menn (2019-tall). Pilates og deler av yoga-tilbudet inngår her uten å skilles ut — dette er et format, ikke en aktivitetstype i seg selv.' },
 ];
 
 const watchData = [
@@ -468,17 +485,17 @@ const watchData = [
 ];
 
 const tableData = [
-  { name:'Styrketrening', volume:'56% (≈2,5 mill)', volumeSort:56, growth:'+6 poeng siden 2021', gender:'Kvinner 47% · Menn 44%', relevance:'high', status:'malt', source:'SSB 2024 / 2019', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
-  { name:'Trening på senter (generelt)', volume:'40%', volumeSort:40, growth:'+10 poeng siden 2021', gender:'Ikke oppgitt separat', relevance:'high', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
-  { name:'Løping / jogging', volume:'38%', volumeSort:38, growth:'Stabil / svak økning', gender:'Menn 43% · Kvinner 35%', relevance:'high', status:'malt', source:'SSB 2019', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/styrketrening-stadig-mer-populaert' },
-  { name:'Sykling', volume:'38%', volumeSort:38, growth:'Stabil', gender:'Ikke oppgitt separat', relevance:'mid', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
-  { name:'Gruppetrening', volume:'20%', volumeSort:20, growth:'Moderat, kvinnedrevet', gender:'Kvinner 27% · Menn lavere', relevance:'high', status:'malt', source:'SSB 2019 / 2024', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/styrketrening-stadig-mer-populaert' },
-  { name:'Ski / langrenn', volume:'26%', volumeSort:26, growth:'Stabil, sesongavhengig', gender:'Ikke oppgitt separat', relevance:'low', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
-  { name:'Pilates / Reformer', volume:'Del av "gruppetrening" — eget tall finnes ikke', volumeSort:5, growth:'+130% klassebesøk (SATS, 1 år)', gender:'Sterkt kvinnedominert (kvalitativt)', relevance:'high', status:'signal', source:'SATS / 3T', url:'https://www.mynewsdesk.com/no/sats-norge-as/pressreleases/pilates-trenden-fortsetter-sats-aapner-nytt-reformer-studio-3373813' },
-  { name:'Yoga', volume:'Eget tall finnes ikke', volumeSort:4, growth:'Ikke tallfestet — kvalitativt "økende interesse"', gender:'Kvinner ønsker det i større grad enn menn', relevance:'high', status:'signal', source:'SSB', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning' },
-  { name:'Hyrox / hybrid-trening', volume:'~8 000 utøvere ventet, Oslo sep 2026', volumeSort:8, growth:'Rask vekst, nylig kommet til Norge', gender:'Ikke oppgitt', relevance:'mid', status:'signal', source:'Aftenposten / HYROX', url:'https://hyrox.com/event/hyrox-oslo/' },
-  { name:'Boksing / kampsport', volume:'Klubbnivå, ikke nasjonalt tall', volumeSort:3, growth:'~20% medlemsvekst (enkeltklubb, 1 år)', gender:'Tradisjonelt mannsdominert, flere kvinner nå', relevance:'low', status:'signal', source:'Rastavanger', url:'https://www.rastavanger.no/lurer-pa-om-fenomenet-ogsa-har-truffet-stavanger/s/5-165-9460' },
-  { name:'Turgåing / spaserturer', volume:'Høyest totalt av alle aktiviteter (ikke presisert %)', volumeSort:70, growth:'Stabil, kvinner noe mer enn menn', gender:'Kvinner noe mer enn menn', relevance:'low', status:'signal', source:'SSB friluftsliv', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning' },
+  { name:'Styrketrening', dimension:'Aktivitet', volume:'56% (≈2,5 mill)', volumeSort:56, growth:'+6 poeng siden 2021', gender:'Kvinner 47% · Menn 44%', relevance:'high', status:'malt', source:'SSB 2024 / 2019', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Løping / jogging', dimension:'Aktivitet', volume:'38%', volumeSort:38, growth:'Stabil / svak økning', gender:'Menn 43% · Kvinner 35%', relevance:'high', status:'malt', source:'SSB 2019', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/styrketrening-stadig-mer-populaert' },
+  { name:'Sykling', dimension:'Aktivitet', volume:'38%', volumeSort:38, growth:'Stabil', gender:'Ikke oppgitt separat', relevance:'mid', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Ski / langrenn', dimension:'Aktivitet', volume:'26%', volumeSort:26, growth:'Stabil, sesongavhengig', gender:'Ikke oppgitt separat', relevance:'low', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Pilates / Reformer', dimension:'Aktivitet', volume:'Del av "gruppetrening" — eget tall finnes ikke', volumeSort:5, growth:'+130% klassebesøk (SATS, 1 år)', gender:'Sterkt kvinnedominert (kvalitativt)', relevance:'high', status:'signal', source:'SATS / 3T', url:'https://www.mynewsdesk.com/no/sats-norge-as/pressreleases/pilates-trenden-fortsetter-sats-aapner-nytt-reformer-studio-3373813' },
+  { name:'Yoga', dimension:'Aktivitet', volume:'Eget tall finnes ikke', volumeSort:4, growth:'Ikke tallfestet — kvalitativt "økende interesse"', gender:'Kvinner ønsker det i større grad enn menn', relevance:'high', status:'signal', source:'SSB', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning' },
+  { name:'Hyrox / hybrid-trening', dimension:'Aktivitet', volume:'~8 000 utøvere ventet, Oslo sep 2026', volumeSort:8, growth:'Rask vekst, nylig kommet til Norge', gender:'Ikke oppgitt', relevance:'mid', status:'signal', source:'Aftenposten / HYROX', url:'https://hyrox.com/event/hyrox-oslo/' },
+  { name:'Boksing / kampsport', dimension:'Aktivitet', volume:'Klubbnivå, ikke nasjonalt tall', volumeSort:3, growth:'~20% medlemsvekst (enkeltklubb, 1 år)', gender:'Tradisjonelt mannsdominert, flere kvinner nå', relevance:'low', status:'signal', source:'Rastavanger', url:'https://www.rastavanger.no/lurer-pa-om-fenomenet-ogsa-har-truffet-stavanger/s/5-165-9460' },
+  { name:'Turgåing / spaserturer', dimension:'Aktivitet', volume:'Høyest totalt av alle aktiviteter (ikke presisert %)', volumeSort:70, growth:'Stabil, kvinner noe mer enn menn', gender:'Kvinner noe mer enn menn', relevance:'low', status:'signal', source:'SSB friluftsliv', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/mest-mosjon-og-idrett-blant-de-med-hoy-inntekt-og-utdanning' },
+  { name:'Trening på treningssenter', dimension:'Kontekst/format', volume:'40%', volumeSort:40, growth:'+10 poeng siden 2021', gender:'Ikke oppgitt separat', relevance:'high', status:'malt', source:'SSB 2024', url:'https://www.ssb.no/kultur-og-fritid/idrett-og-friluftsliv/statistikk/idrett-og-friluftsliv-levekarsundersokelsen/artikler/styrketrening-i-vinden' },
+  { name:'Gruppetrening', dimension:'Kontekst/format', volume:'20%', volumeSort:20, growth:'Moderat, kvinnedrevet', gender:'Kvinner 27% · Menn lavere', relevance:'high', status:'malt', source:'SSB 2019 / 2024', url:'https://www.ssb.no/kultur-og-fritid/artikler-og-publikasjoner/styrketrening-stadig-mer-populaert' },
 ];
 
 const tooltip = document.getElementById('tooltip');
@@ -499,31 +516,39 @@ function positionTip(el){
 }
 function hideTip(){ tooltip.classList.remove('show'); }
 
-// Bar chart
+// Bar chart(s)
 const maxScale = 60;
-const barchartEl = document.getElementById('barchart');
-barData.forEach(d => {
-  const row = document.createElement('div');
-  row.className = 'bar-row';
-  row.innerHTML = `
-    <div class="bar-name">${d.name}</div>
-    <div class="bar-track"><div class="bar-fill" style="width:${(d.pct/maxScale*100).toFixed(1)}%"></div></div>
-    <div class="bar-val-wrap">
-      <span class="bar-val">${d.pct}%</span>
-      <span class="badge rel-${d.relevance}">${REL_LABEL[d.relevance]}</span>
-    </div>`;
-  row.addEventListener('mouseenter', () => showTip(row, `<b>${d.name}</b>${d.tip}`));
-  row.addEventListener('mousemove', () => positionTip(row));
-  row.addEventListener('mouseleave', hideTip);
-  barchartEl.appendChild(row);
-});
-const ticksEl = document.getElementById('ticks');
-[0,10,20,30,40,50,60].forEach(t => {
-  const s = document.createElement('span');
-  s.style.left = (t/maxScale*100) + '%';
-  s.textContent = t + '%';
-  ticksEl.appendChild(s);
-});
+function renderBars(containerId, data){
+  const el = document.getElementById(containerId);
+  data.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'bar-row';
+    row.innerHTML = `
+      <div class="bar-name">${d.name}</div>
+      <div class="bar-track"><div class="bar-fill" style="width:${(d.pct/maxScale*100).toFixed(1)}%"></div></div>
+      <div class="bar-val-wrap">
+        <span class="bar-val">${d.pct}%</span>
+        <span class="badge rel-${d.relevance}">${REL_LABEL[d.relevance]}</span>
+      </div>`;
+    row.addEventListener('mouseenter', () => showTip(row, `<b>${d.name}</b>${d.tip}`));
+    row.addEventListener('mousemove', () => positionTip(row));
+    row.addEventListener('mouseleave', hideTip);
+    el.appendChild(row);
+  });
+}
+function renderTicks(containerId){
+  const el = document.getElementById(containerId);
+  [0,10,20,30,40,50,60].forEach(t => {
+    const s = document.createElement('span');
+    s.style.left = (t/maxScale*100) + '%';
+    s.textContent = t + '%';
+    el.appendChild(s);
+  });
+}
+renderBars('barchart', barData);
+renderTicks('ticks');
+renderBars('contextchart', contextData);
+renderTicks('contextticks');
 
 // Watch-list
 const watchgridEl = document.getElementById('watchgrid');
@@ -594,6 +619,7 @@ function renderTable(){
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="name">${r.name}</td>
+      <td><span class="sub" style="margin-top:0">${r.dimension}</span></td>
       <td class="num">${r.volume}</td>
       <td>${r.growth}</td>
       <td>${r.gender}</td>
